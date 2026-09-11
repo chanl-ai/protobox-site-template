@@ -29,6 +29,7 @@ import { CtaBannerPanel, CtaBannerStrip } from "@/components/sections/cta-banner
 import { AboutFounderLetter, AboutFounderPortrait } from "@/components/sections/about-founder"
 import { ContactSimple, ContactSplit } from "@/components/sections/contact"
 import { FormContactCard, FormContactSplit } from "@/components/sections/form-contact"
+import { GenericSection } from "@/components/sections/generic"
 
 function renderSection(
   key: string,
@@ -82,9 +83,10 @@ function renderSection(
       return <FormContactSplit key={reactKey} {...(data as FormContactContent)} />
     default:
       // Brain-authored specs can carry section types the registry doesn't ship.
-      // Content never bricks the build: warn, render nothing for this entry.
-      console.warn(`[sections] unknown section "${key}" — skipping (not in the registry)`)
-      return null
+      // Content never bricks the build AND never disappears: warn, then render
+      // the entry's recognizable fields as plain prose (GenericSection).
+      console.warn(`[sections] unknown section "${key}" — rendering generically (not in the registry)`)
+      return <GenericSection key={reactKey} content={(data ?? {}) as Record<string, unknown>} />
   }
 }
 

@@ -58,6 +58,11 @@ export interface LandingManifest extends PageManifest {
   nav?: { label: string; href: string }[]
 }
 
+export interface SiteCta {
+  label: string
+  href: string
+}
+
 export interface SiteManifest {
   theme: string
   mode: ThemeMode
@@ -65,6 +70,10 @@ export interface SiteManifest {
   footer: { variant: FooterVariant }
   brand?: SiteBrand
   nav?: { label: string; href: string }[]
+  cta?: SiteCta
+  /** Where the resolved manifest came from. Brain-driven sites must never
+   *  fall back to file-mode demo pages or the demo CTA. */
+  source?: "brain" | "file"
   pages: Record<string, PageManifest>
 }
 
@@ -98,12 +107,44 @@ export async function resolveSiteManifest(): Promise<SiteManifest> {
       try {
         const parsed = JSON.parse(specItem.content) as SiteManifest
         if (parsed?.pages) {
-          // A brain-authored spec states only what its author decided; every
-          // omitted top-level field (theme, mode, header, footer, brand, nav)
-          // inherits the template default so partial specs render instead of
-          // crashing. Pages always come from the spec alone.
-          const base = getSiteManifest()
-          return { ...base, ...parsed, pages: parsed.pages }
+          // A brain-authored spec states only what its author decided. Omitted
+          // STRUCTURAL fields (theme, mode, header, footer) inherit the
+          // template default so partial specs render instead of crashing —
+          // but IDENTITY fields (brand, nav, cta) never do: the file manifest
+          // describes the template's demo business, and its name, links, or
+          // call-to-action surfacing on a user's site is contamination, not a
+          // fallback. A spec with no brand gets one derived from its own home
+          // page title.
+          const { brand: _demoBrand, nav: _demoNav, cta: _demoCta, ...structural } = getSiteManifest()
+          const resolved: SiteManifest = { ...structural, ...parsed, pages: parsed.pages, source: "brain" }
+          if (!resolved.brand) {
+            const homeTitle = parsed.pages.home?.meta?.title ?? ""
+            const name = homeTitle.split(/\s+[—·|–]\s+/)[0]?.trim() || "Untitled site"
+            console.warn(
+              `[brain] site-spec has no "brand" block — deriving brand name "${name}" from the home page title. Add a brand block ({ name, shortName, email }) to the site-spec for a real identity.`
+            )
+            resolved.brand = { name, shortName: name, email: "" }
+          } else {
+            // Authors write partial brand blocks ({ name } alone is common);
+            // BrandMark and the footer read shortName/email unconditionally.
+            resolved.brand = {
+              ...resolved.brand,
+              shortName: resolved.brand.shortName ?? resolved.brand.name,
+              email: resolved.brand.email ?? "",
+            }
+          }
+          if (!resolved.nav) {
+            // Nav derives from the spec's own pages — never from the file
+            // manifest's demo pages.
+            resolved.nav = Object.keys(parsed.pages)
+              .filter((slug) => slug !== "home")
+              .map((slug) => ({
+                label: slug.charAt(0).toUpperCase() + slug.slice(1).replace(/-/g, " "),
+                href: `/${slug}`,
+              }))
+            resolved.nav.push({ label: "Blog", href: "/blog" })
+          }
+          return resolved
         }
         console.warn('[brain] site-spec item content has no "pages"; falling back to file site.json')
       } catch {
@@ -111,7 +152,7 @@ export async function resolveSiteManifest(): Promise<SiteManifest> {
       }
     }
   }
-  return getSiteManifest()
+  return { ...getSiteManifest(), source: "file" }
 }
 
 export function getPageManifest(siteManifest: SiteManifest, slug: string): PageManifest {

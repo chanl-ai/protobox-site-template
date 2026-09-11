@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { BlogPost } from "@/components/blocks/BlogPost"
 import { getPost, listPosts, listRelatedPosts } from "@/lib/content"
+import { resolveSiteManifest } from "@/lib/site"
 import { siteConfig } from "@/lib/site-config"
 
 export const revalidate = 60
@@ -31,14 +32,18 @@ export async function generateMetadata({
 
 export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">) {
   const { slug } = await params
-  const [post, related] = await Promise.all([
+  const [post, related, manifest] = await Promise.all([
     getPost(slug),
     listRelatedPosts(slug, 3),
+    resolveSiteManifest(),
   ])
   if (!post) {
     notFound()
   }
 
+  // JSON-LD publisher identity follows the resolved brand — a brain-driven
+  // site must never publish under the template demo's name.
+  const siteName = manifest.brand?.name ?? siteConfig.name
   const url = `${siteConfig.url}/blog/${post.slug}`
   const jsonLd: Record<string, unknown>[] = [
     {
@@ -54,15 +59,15 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
             name: post.frontmatter.author.name,
             jobTitle: post.frontmatter.author.role,
           }
-        : { "@type": "Organization", name: siteConfig.name },
-      publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
+        : { "@type": "Organization", name: siteName },
+      publisher: { "@type": "Organization", name: siteName, url: siteConfig.url },
       keywords: post.frontmatter.tags?.join(", "),
     },
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: siteConfig.name, item: siteConfig.url },
+        { "@type": "ListItem", position: 1, name: siteName, item: siteConfig.url },
         { "@type": "ListItem", position: 2, name: "Notes", item: `${siteConfig.url}/blog` },
         { "@type": "ListItem", position: 3, name: post.frontmatter.title, item: url },
       ],

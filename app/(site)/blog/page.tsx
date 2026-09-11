@@ -1,12 +1,18 @@
 import type { Metadata } from "next"
 import { BlogIndex } from "@/components/blocks/BlogIndex"
 import { listPosts } from "@/lib/content"
+import { resolveSiteManifest } from "@/lib/site"
+import { siteConfig } from "@/lib/site-config"
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  title: "Notes",
-  description: "Writing on restaurant bookkeeping and margin from Torres Books & Margins.",
+export async function generateMetadata(): Promise<Metadata> {
+  const manifest = await resolveSiteManifest()
+  const name = manifest.brand?.name ?? siteConfig.name
+  return {
+    title: "Blog",
+    description: `Writing from ${name}.`,
+  }
 }
 
 export default async function BlogPage() {

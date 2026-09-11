@@ -28,7 +28,7 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
         variant={manifest.header.variant}
         brand={brand}
         nav={nav}
-        cta={siteConfig.headerCta}
+        cta={manifest.cta ?? (manifest.source === "brain" ? undefined : siteConfig.headerCta)}
       />
       <main className="flex-1">{children}</main>
       <SiteFooter variant={manifest.footer.variant} brand={brand} nav={nav} />

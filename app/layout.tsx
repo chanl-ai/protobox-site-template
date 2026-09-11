@@ -14,12 +14,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
-export const metadata: Metadata = {
-  title: {
-    default: siteConfig.name,
-    template: `%s · ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
+// Brand comes from the resolved manifest so a brain-driven site titles itself
+// — the static siteConfig identity applies only in file mode.
+export async function generateMetadata(): Promise<Metadata> {
+  const manifest = await resolveSiteManifest()
+  const name = manifest.brand?.name ?? siteConfig.name
+  const description = manifest.brand
+    ? (manifest.brand.tagline ?? manifest.pages.home?.meta?.description ?? "")
+    : siteConfig.description
+  return {
+    title: { default: name, template: `%s · ${name}` },
+    description,
+  }
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

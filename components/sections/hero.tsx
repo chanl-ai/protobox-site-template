@@ -109,9 +109,13 @@ export function HeroSplit(content: HeroContent) {
           </div>
         </div>
 
-        <div className="mt-12 md:mt-16">
-          <PreviewSurface title="dashboard" stats={stats} />
-        </div>
+        {/* The dashboard mock is decoration for content that brings numbers —
+            without stats it degrades to skeleton bars and a stray label. */}
+        {stats?.length ? (
+          <div className="mt-12 md:mt-16">
+            <PreviewSurface title="dashboard" stats={stats} />
+          </div>
+        ) : null}
       </div>
     </section>
   )
@@ -143,9 +147,11 @@ export function HeroCentered(content: HeroContent) {
           </div>
         </div>
 
-        <div className="mx-auto mt-12 max-w-5xl md:mt-16">
-          <PreviewSurface stats={stats} />
-        </div>
+        {stats?.length ? (
+          <div className="mx-auto mt-12 max-w-5xl md:mt-16">
+            <PreviewSurface stats={stats} />
+          </div>
+        ) : null}
       </div>
     </section>
   )
