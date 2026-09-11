@@ -9,14 +9,20 @@ function formatDate(iso: string) {
   }).format(new Date(iso))
 }
 
-export function BlogIndex({ posts }: { posts: Post[] }) {
+export function BlogIndex({
+  posts,
+  heading,
+  intro,
+}: {
+  posts: Post[]
+  heading: string
+  intro?: string
+}) {
   return (
     <section>
       <div className="mx-auto max-w-3xl px-6 py-20">
-        <h1 className="font-heading text-3xl font-medium">Notes on running the numbers</h1>
-        <p className="mt-3 text-muted-foreground">
-          Short, specific writing on restaurant bookkeeping and margin — no filler.
-        </p>
+        <h1 className="font-heading text-3xl font-medium">{heading}</h1>
+        {intro ? <p className="mt-3 text-muted-foreground">{intro}</p> : null}
 
         <ul className="mt-12 space-y-10">
           {posts.map((post) => (

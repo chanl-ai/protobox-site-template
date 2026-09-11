@@ -16,6 +16,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BlogPage() {
-  const posts = await listPosts()
-  return <BlogIndex posts={posts} />
+  const [posts, manifest] = await Promise.all([listPosts(), resolveSiteManifest()])
+  // The index copy below describes the template's demo business; on a
+  // brain-driven site it would surface under the user's brand, so brain mode
+  // gets neutral copy derived from the resolved brand instead.
+  const copy =
+    manifest.source === "brain"
+      ? { heading: "Blog", intro: manifest.brand?.tagline }
+      : {
+          heading: "Notes on running the numbers",
+          intro: "Short, specific writing on restaurant bookkeeping and margin — no filler.",
+        }
+  return <BlogIndex posts={posts} heading={copy.heading} intro={copy.intro} />
 }
