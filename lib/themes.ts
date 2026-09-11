@@ -19,9 +19,13 @@ const THEMES: Record<string, SiteTheme> = {
 export function getTheme(name: string): SiteTheme {
   const theme = THEMES[name]
   if (!theme) {
-    throw new Error(
-      `Unknown theme "${name}". Available: ${Object.keys(THEMES).join(", ")}`
+    // A brain-authored manifest may omit theme (the brand recipe page is the
+    // intended source) or carry a name we don't ship. Content must never
+    // brick the build — warn and serve the default preset.
+    console.warn(
+      `[theme] unknown theme "${name}" — falling back to "foundry". Available: ${Object.keys(THEMES).join(", ")}`
     )
+    return THEMES["foundry"]
   }
   return theme
 }
