@@ -38,17 +38,19 @@ export function PricingSingleOffer({ heading, intro, offers }: PricingContent) {
             </p>
           </div>
 
-          <div className="mt-8">
-            <h4 className="micro-label text-muted-foreground">What you get</h4>
-            <ul className="mt-4 space-y-3">
-              {offer.includes.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
-                  <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {offer.includes.length ? (
+            <div className="mt-8">
+              <h4 className="micro-label text-muted-foreground">What you get</h4>
+              <ul className="mt-4 space-y-3">
+                {offer.includes.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {offer.notFor?.length ? (
             <>
@@ -117,14 +119,16 @@ export function PricingTiers({ heading, intro, offers }: PricingContent) {
                   </span>
                 ) : null}
               </p>
-              <ul className="mt-6 flex-1 space-y-3 border-t border-border pt-6">
-                {offer.includes.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
-                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              {offer.includes.length ? (
+                <ul className="mt-6 flex-1 space-y-3 border-t border-border pt-6">
+                  {offer.includes.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm leading-relaxed">
+                      <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
               <Button
                 asChild
                 size="lg"
