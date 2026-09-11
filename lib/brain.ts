@@ -38,17 +38,20 @@ interface KnowledgeListResponse {
 }
 
 /**
- * Lists published knowledge items for one category. Returns [] on any
- * failure (network error, non-2xx, brain disabled) so callers can treat an
- * empty result as "fall back to file content" without a try/catch of their
- * own.
+ * Lists published knowledge items for one category. Authored content lives
+ * as brain PAGES (kind=page) — sources are sync pipes, not this site's
+ * content — so every list is scoped to kind=page; category/tag stay the
+ * site's own discriminators within that (site-page/blog/site-config/
+ * brand-visuals, tag=published). Returns [] on any failure (network error,
+ * non-2xx, brain disabled) so callers can treat an empty result as "fall
+ * back to file content" without a try/catch of their own.
  */
 export async function listBrainCollection(
   category: string,
   tag?: string
 ): Promise<KnowledgeItem[]> {
   if (!brainEnabled()) return []
-  const params = new URLSearchParams({ category, limit: "100" })
+  const params = new URLSearchParams({ kind: "page", category, limit: "100" })
   if (tag) params.set("tag", tag)
   try {
     const res = await fetch(`${API_URL}/api/v1/knowledge?${params.toString()}`, {
