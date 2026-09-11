@@ -5,15 +5,21 @@
 import manifest from "@/site.json"
 import { siteConfig } from "@/lib/site-config"
 import type { ThemeMode } from "@/lib/theme"
-import { brainEnabled, getBrainSingle } from "@/lib/brain"
+import { brainEnabled, listBrainFolder, isManifestContent } from "@/lib/brain"
 
 export type HeaderVariant = "minimal" | "center" | "pill"
 export type FooterVariant = "slim" | "columns" | "big-brand"
 
+/**
+ * `content` is a file-mode ref ("home/hero", resolved against
+ * content/sections/) in file mode, or the section's contract object
+ * directly in brain mode — the site-spec doc inlines every section's
+ * content, so there is nothing left to fetch per-ref.
+ */
 export interface ManifestSectionEntry {
   section: string
   variant: string
-  content: string
+  content: string | Record<string, unknown>
 }
 
 export interface SiteBrand {
@@ -23,12 +29,19 @@ export interface SiteBrand {
   tagline?: string
 }
 
+export interface PageMeta {
+  title: string
+  description: string
+  og?: Record<string, unknown>
+}
+
 export interface PageManifest {
   theme?: string
   mode?: ThemeMode
   header?: { variant: HeaderVariant }
   footer?: { variant: FooterVariant }
   brand?: SiteBrand
+  meta?: PageMeta
   sections: ManifestSectionEntry[]
 }
 
@@ -59,26 +72,33 @@ export function getSiteManifest(): SiteManifest {
 }
 
 /**
- * The manifest that actually drives the request: the brain's single
- * published "site-config" item (its content IS the full site.json shape —
- * theme, mode, chrome, brand, nav, and every page's section stack) when the
- * brain is enabled and has one, else the file manifest. Falls back loudly
- * (console.warn) rather than silently when the brain is enabled but the
- * entry is missing or malformed, since a bad seed here means every page on
- * the site loses its content, not just one section.
+ * The manifest that actually drives the request: the single site-spec
+ * knowledge item filed in folder "site" (its content IS the full site.json
+ * shape — theme, mode, chrome, brand, nav, and every page's section stack
+ * with each section's content inlined) when the brain is enabled and has
+ * one, else the file manifest. Folder "site" also holds the "about" prose
+ * page, so every published item there is scanned for the one whose content
+ * is the manifest JSON rather than assuming the first result. Falls back
+ * loudly (console.warn naming what was missing) rather than silently when
+ * the brain is enabled but the entry is missing or malformed, since a bad
+ * seed here means every page on the site loses its content, not just one
+ * section.
  */
 export async function resolveSiteManifest(): Promise<SiteManifest> {
   if (brainEnabled()) {
-    const item = await getBrainSingle("site-config", "published")
-    if (!item) {
-      console.warn('[brain] no published "site-config" item found; falling back to file site.json')
+    const items = await listBrainFolder("site", "published")
+    const specItem = items.find((item) => isManifestContent(item.content))
+    if (!specItem) {
+      console.warn(
+        '[brain] no published site-spec item (JSON with a "pages" key) found in folder "site"; falling back to file site.json'
+      )
     } else {
       try {
-        const parsed = JSON.parse(item.content) as SiteManifest
+        const parsed = JSON.parse(specItem.content) as SiteManifest
         if (parsed?.pages) return parsed
-        console.warn('[brain] "site-config" item content has no "pages"; falling back to file site.json')
+        console.warn('[brain] site-spec item content has no "pages"; falling back to file site.json')
       } catch {
-        console.warn('[brain] "site-config" item content is not valid JSON; falling back to file site.json')
+        console.warn('[brain] site-spec item content is not valid JSON; falling back to file site.json')
       }
     }
   }

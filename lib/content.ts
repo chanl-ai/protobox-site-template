@@ -10,7 +10,7 @@ import path from "node:path"
 import matter from "gray-matter"
 import { remark } from "remark"
 import remarkHtml from "remark-html"
-import { brainEnabled, listBrainCollection } from "@/lib/brain"
+import { brainEnabled, isManifestContent, listBrainFolder } from "@/lib/brain"
 
 const PAGES_DIR = path.join(process.cwd(), "content", "pages")
 const BLOG_DIR = path.join(process.cwd(), "content", "blog")
@@ -145,8 +145,14 @@ async function listFilePages(): Promise<Page[]> {
 }
 
 async function listBrainPages(): Promise<Page[]> {
-  const items = await listBrainCollection("site-page", "published")
-  const pages = await Promise.all(items.map((item) => pageFromRaw(item.content)))
+  // Folder "site" holds the site-spec manifest doc alongside prose pages —
+  // skip the manifest here the same way resolveSiteManifest() picks it out
+  // of the reverse case, so a JSON blob never shows up as an empty-titled
+  // "page" in the nav.
+  const items = await listBrainFolder("site", "published")
+  const pages = await Promise.all(
+    items.filter((item) => !isManifestContent(item.content)).map((item) => pageFromRaw(item.content))
+  )
   return pages.filter((page) => page.frontmatter.status === "published")
 }
 
@@ -191,7 +197,7 @@ async function listFilePosts(): Promise<Post[]> {
 }
 
 async function listBrainPosts(): Promise<Post[]> {
-  const items = await listBrainCollection("blog", "published")
+  const items = await listBrainFolder("site/blog", "published")
   const posts = await Promise.all(items.map((item) => postFromRaw(item.content)))
   return posts.filter((post) => post.frontmatter.status === "published")
 }
@@ -259,7 +265,16 @@ export async function getLandingManifest<T>(slug: string): Promise<T | null> {
   }
 }
 
-async function getFileSectionContent<T>(ref: string): Promise<T> {
+/**
+ * Loads one section's content blob by manifest ref ("home/hero" →
+ * content/sections/home/hero.json) — file mode only. Brain mode never calls
+ * this: the site-spec doc inlines every section's content directly on its
+ * manifest entry (see ManifestSectionEntry / stripSectionRef), so there is
+ * no separate per-section lookup left to do. Throws when the ref resolves
+ * nowhere, so a manifest typo fails the build instead of rendering an empty
+ * section.
+ */
+export async function getSectionContent<T>(ref: string): Promise<T> {
   const file = path.join(SECTIONS_DIR, `${ref}.json`)
   let raw: string
   try {
@@ -271,46 +286,17 @@ async function getFileSectionContent<T>(ref: string): Promise<T> {
 }
 
 /**
- * Every published "site-section" knowledge item, keyed by the `ref` field
- * carried inside its JSON content (metadata can't hold it — see the note on
- * listBrainPages/listBrainPosts above). A malformed blob is skipped, not
- * thrown, so one bad seed doesn't break every other section on the page.
+ * Strips a stray "ref" key from an inline section content object before it
+ * gets spread as props onto a section component ({...data} in
+ * lib/sections/registry.tsx) — a leftover "ref" key there collides with
+ * React's reserved ref prop and throws "Refs cannot be used in Server
+ * Components" instead of rendering. Carried over from the old per-ref
+ * brain-section lookup as a defensive guard against a manifest that still
+ * has one.
  */
-async function listBrainSections(): Promise<Map<string, unknown>> {
-  const items = await listBrainCollection("site-section", "published")
-  const sections = new Map<string, unknown>()
-  for (const item of items) {
-    try {
-      // "ref" is stripped before storing: it's only routing metadata, and
-      // section content gets spread as props onto section components
-      // ({...data} in registry.tsx) — a leftover "ref" key there collides
-      // with React's reserved ref prop and throws "Refs cannot be used in
-      // Server Components" instead of rendering.
-      const parsed = JSON.parse(item.content) as { ref?: string; [key: string]: unknown }
-      const { ref, ...content } = parsed
-      if (ref) sections.set(ref, content)
-    } catch {
-      console.warn(`[brain] site-section item "${item.id}" is not valid JSON; skipped`)
-    }
-  }
-  return sections
-}
-
-/**
- * Loads one section's content blob by manifest ref ("home/hero" →
- * content/sections/home/hero.json in file mode, or the "site-section" item
- * whose content carries `"ref": "home/hero"` in brain mode). A ref missing
- * from the brain falls back to the file per-ref (never silently — logs which
- * ref was missing), so a partially-seeded workspace still renders every
- * section. Both modes throw when the ref resolves nowhere, so a manifest
- * typo fails the build instead of rendering an empty section.
- */
-export async function getSectionContent<T>(ref: string): Promise<T> {
-  if (brainEnabled()) {
-    const sections = await listBrainSections()
-    const data = sections.get(ref)
-    if (data) return data as T
-    console.warn(`[brain] no published site-section for ref "${ref}"; falling back to file`)
-  }
-  return getFileSectionContent<T>(ref)
+export function stripSectionRef<T>(content: Record<string, unknown>): T {
+  if (!("ref" in content)) return content as T
+  const rest = { ...content }
+  delete rest.ref
+  return rest as T
 }

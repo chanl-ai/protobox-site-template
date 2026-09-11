@@ -3,7 +3,7 @@
 // manifest typo fails the build/render loudly instead of dropping a section.
 
 import type { ReactElement } from "react"
-import { getSectionContent } from "@/lib/content"
+import { getSectionContent, stripSectionRef } from "@/lib/content"
 import type { ManifestSectionEntry } from "@/lib/site"
 import type {
   AboutFounderContent,
@@ -85,26 +85,31 @@ function renderSection(
   }
 }
 
-/** Renders one page's ordered section stack; content loads in parallel. */
+/**
+ * Renders one page's ordered section stack; content loads in parallel.
+ * `entry.content` is a file-mode ref (string) needing a lookup, or a
+ * brain-mode section object already inlined on the manifest — no fetch
+ * needed, just the ref-strip guard.
+ */
 export async function SectionStack({
   entries,
 }: {
   entries: ManifestSectionEntry[]
 }) {
   const loaded = await Promise.all(
-    entries.map(async (entry) => ({
+    entries.map(async (entry, index) => ({
       entry,
-      data: await getSectionContent<unknown>(entry.content),
+      data:
+        typeof entry.content === "string"
+          ? await getSectionContent<unknown>(entry.content)
+          : stripSectionRef<unknown>(entry.content),
+      key: typeof entry.content === "string" ? entry.content : `${entry.section}-${entry.variant}-${index}`,
     }))
   )
   return (
     <>
-      {loaded.map(({ entry, data }, index) =>
-        renderSection(
-          `${entry.section}/${entry.variant}`,
-          data,
-          `${entry.content}-${index}`
-        )
+      {loaded.map(({ entry, data, key }) =>
+        renderSection(`${entry.section}/${entry.variant}`, data, key)
       )}
     </>
   )
