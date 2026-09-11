@@ -33,6 +33,8 @@ export interface PageMeta {
   title: string
   description: string
   og?: Record<string, unknown>
+  /** Brain-authored pages: anything but "published" never renders publicly. */
+  status?: "draft" | "published"
 }
 
 export interface PageManifest {
@@ -109,6 +111,11 @@ export function getPageManifest(siteManifest: SiteManifest, slug: string): PageM
   const page = siteManifest.pages[slug]
   if (!page) {
     throw new Error(`site manifest has no page "${slug}"`)
+  }
+  // A brain-authored page carries meta.status; anything not "published" must never
+  // render publicly. File-mode manifests predate the field and stay unaffected.
+  if (page.meta?.status && page.meta.status !== "published") {
+    throw new Error(`site manifest page "${slug}" is not published (status: ${page.meta.status})`)
   }
   return page
 }
