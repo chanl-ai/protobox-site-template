@@ -4,6 +4,8 @@ import { BlogPost } from "@/components/blocks/BlogPost"
 import { getPost, listPosts, listRelatedPosts } from "@/lib/content"
 import { siteConfig } from "@/lib/site-config"
 
+export const revalidate = 60
+
 export async function generateStaticParams() {
   const posts = await listPosts()
   return posts.map((post) => ({ slug: post.slug }))

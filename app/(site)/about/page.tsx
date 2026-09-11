@@ -3,6 +3,8 @@ import { notFound } from "next/navigation"
 import { Prose } from "@/components/blocks/Prose"
 import { getPage } from "@/lib/content"
 
+export const revalidate = 60
+
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPage("about")
   return {

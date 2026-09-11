@@ -10,6 +10,7 @@ import path from "node:path"
 import matter from "gray-matter"
 import { remark } from "remark"
 import remarkHtml from "remark-html"
+import { brainEnabled, listBrainCollection, type KnowledgeItem } from "@/lib/brain"
 
 const PAGES_DIR = path.join(process.cwd(), "content", "pages")
 const BLOG_DIR = path.join(process.cwd(), "content", "blog")
@@ -118,7 +119,30 @@ function readTimeMinutes(markdown: string): number {
   return Math.max(2, Math.round(words / 220))
 }
 
-export async function listPages(): Promise<Page[]> {
+// POST /api/v1/knowledge ignores a client-supplied `metadata` body — only
+// `category` and `tags` land in the stored metadata (verified against the
+// local stack: a seeded item's metadata came back with just category, tags,
+// requestedSource, _id). So metadata.slug/description below are read for
+// forward compatibility but never populated today; the slug always falls
+// back to the slugified title in practice.
+function brainSlug(item: KnowledgeItem): string {
+  const metaSlug = item.metadata?.slug
+  return typeof metaSlug === "string" && metaSlug ? metaSlug : slugify(item.title)
+}
+
+async function brainItemToPage(item: KnowledgeItem): Promise<Page> {
+  const contentHtml = await markdownToHtml(item.content)
+  const frontmatter: PageFrontmatter = {
+    title: item.title,
+    slug: brainSlug(item),
+    status: "published",
+    description: item.metadata?.description ?? "",
+    date: (item.metadata?.date as string | undefined) ?? item.createdAt,
+  }
+  return { slug: frontmatter.slug, frontmatter, contentHtml }
+}
+
+async function listFilePages(): Promise<Page[]> {
   const files = await readFilesWithExt(PAGES_DIR, ".md")
   const pages = await Promise.all(
     files.map(async (file) => {
@@ -129,9 +153,19 @@ export async function listPages(): Promise<Page[]> {
       return { slug: frontmatter.slug, frontmatter, contentHtml }
     })
   )
-  return pages
-    .filter((page) => page.frontmatter.status === "published")
-    .sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title))
+  return pages.filter((page) => page.frontmatter.status === "published")
+}
+
+export async function listPages(): Promise<Page[]> {
+  if (brainEnabled()) {
+    const items = await listBrainCollection("site-page", "published")
+    if (items.length) {
+      const pages = await Promise.all(items.map(brainItemToPage))
+      return pages.sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title))
+    }
+  }
+  const pages = await listFilePages()
+  return pages.sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title))
 }
 
 export async function getPage(slug: string): Promise<Page | null> {
@@ -139,7 +173,46 @@ export async function getPage(slug: string): Promise<Page | null> {
   return pages.find((page) => page.slug === slug) ?? null
 }
 
-export async function listPosts(): Promise<Post[]> {
+/**
+ * The home page's brain content, independent of slug: since slugs always
+ * derive from title (see brainSlug above), a brain-seeded home entry only
+ * matches getPage("home") if it happens to be titled exactly "Home". Callers
+ * that need "whichever site-page represents home" — the home route — use
+ * this instead: it prefers an exact "home" slug match but falls back to the
+ * single/first published site-page entry, matching the one-home-page-per-
+ * workspace convention this collection is seeded under.
+ */
+export async function getBrainHomePage(): Promise<Page | null> {
+  const items = await listBrainCollection("site-page", "published")
+  if (!items.length) return null
+  const bySlug = items.find((item) => brainSlug(item) === "home")
+  return brainItemToPage(bySlug ?? items[0])
+}
+
+async function brainItemToPost(item: KnowledgeItem): Promise<Post> {
+  const { html, toc } = addHeadingIds(await markdownToHtml(item.content))
+  const tags = item.metadata?.tags?.filter((tag) => tag !== "published")
+  const frontmatter: PostFrontmatter = {
+    title: item.title,
+    slug: brainSlug(item),
+    status: "published",
+    description: item.metadata?.description ?? "",
+    date: (item.metadata?.date as string | undefined) ?? item.createdAt,
+    author: item.metadata?.author as PostAuthor | undefined,
+    category: item.metadata?.postCategory as string | undefined,
+    tags,
+    faqs: item.metadata?.faqs as PostFaq[] | undefined,
+  }
+  return {
+    slug: frontmatter.slug,
+    frontmatter,
+    contentHtml: html,
+    toc,
+    readTimeMinutes: readTimeMinutes(item.content),
+  }
+}
+
+async function listFilePosts(): Promise<Post[]> {
   const files = await readFilesWithExt(BLOG_DIR, ".md")
   const posts = await Promise.all(
     files.map(async (file) => {
@@ -156,9 +229,19 @@ export async function listPosts(): Promise<Post[]> {
       }
     })
   )
-  return posts
-    .filter((post) => post.frontmatter.status === "published")
-    .sort((a, b) => (a.frontmatter.date < b.frontmatter.date ? 1 : -1))
+  return posts.filter((post) => post.frontmatter.status === "published")
+}
+
+export async function listPosts(): Promise<Post[]> {
+  if (brainEnabled()) {
+    const items = await listBrainCollection("blog", "published")
+    if (items.length) {
+      const posts = await Promise.all(items.map(brainItemToPost))
+      return posts.sort((a, b) => (a.frontmatter.date < b.frontmatter.date ? 1 : -1))
+    }
+  }
+  const posts = await listFilePosts()
+  return posts.sort((a, b) => (a.frontmatter.date < b.frontmatter.date ? 1 : -1))
 }
 
 export async function getPost(slug: string): Promise<Post | null> {

@@ -5,6 +5,7 @@
 import manifest from "@/site.json"
 import { siteConfig } from "@/lib/site-config"
 import type { ThemeMode } from "@/lib/theme"
+import { getBrainSingle } from "@/lib/brain"
 
 export type HeaderVariant = "minimal" | "center" | "pill"
 export type FooterVariant = "slim" | "columns" | "big-brand"
@@ -68,5 +69,25 @@ export function getDefaultBrand(): SiteBrand {
     shortName: siteConfig.shortName,
     email: siteConfig.email,
     tagline: siteConfig.description,
+  }
+}
+
+export interface BrainSiteConfig {
+  name?: string
+  nav?: { label: string; href: string }[]
+}
+
+/**
+ * Site identity + nav from the brain's "site-config" category (single JSON
+ * entry). Returns null when the brain is disabled or has no entry, so
+ * callers fall back to siteConfig + pages-derived nav.
+ */
+export async function getBrainSiteConfig(): Promise<BrainSiteConfig | null> {
+  const item = await getBrainSingle("site-config")
+  if (!item) return null
+  try {
+    return JSON.parse(item.content) as BrainSiteConfig
+  } catch {
+    return null
   }
 }

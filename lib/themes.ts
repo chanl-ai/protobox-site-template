@@ -3,6 +3,7 @@
 // never grows a filesystem dependency.
 
 import type { SiteTheme } from "@/lib/theme"
+import { getBrainSingle } from "@/lib/brain"
 import heritage from "@/presets/heritage.json"
 import foundry from "@/presets/foundry.json"
 import meadow from "@/presets/meadow.json"
@@ -27,4 +28,22 @@ export function getTheme(name: string): SiteTheme {
 
 export function listThemes(): SiteTheme[] {
   return Object.values(THEMES)
+}
+
+/**
+ * Brand preset from the brain's "brand-visuals" category (single JSON entry,
+ * same shape as presets/*.json). Returns null when the brain is disabled,
+ * empty, or the content doesn't parse as a SiteTheme, so callers fall back
+ * to the named preset in site.json.
+ */
+export async function getBrainTheme(): Promise<SiteTheme | null> {
+  const item = await getBrainSingle("brand-visuals")
+  if (!item) return null
+  try {
+    const theme = JSON.parse(item.content) as SiteTheme
+    if (!theme?.light || !theme?.dark || !theme?.fonts) return null
+    return theme
+  } catch {
+    return null
+  }
 }

@@ -1,10 +1,13 @@
 import type { Metadata } from "next"
 import { Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { getTheme, listThemes } from "@/lib/themes"
+import { getBrainTheme, getTheme, listThemes } from "@/lib/themes"
 import { themeStyleTag, themesGoogleFontsHref } from "@/lib/theme"
 import { getSiteManifest } from "@/lib/site"
 import { siteConfig } from "@/lib/site-config"
+import { brainEnabled } from "@/lib/brain"
+
+export const revalidate = 60
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -19,9 +22,11 @@ export const metadata: Metadata = {
   description: siteConfig.description,
 }
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   const manifest = getSiteManifest()
-  const theme = getTheme(manifest.theme)
+  const theme = brainEnabled()
+    ? ((await getBrainTheme()) ?? getTheme(manifest.theme))
+    : getTheme(manifest.theme)
   const themeCss = themeStyleTag(theme)
   // All theme fonts load up front so per-page theme overrides (demo-b) and
   // the /blocks gallery switcher render correctly without a layout change.
