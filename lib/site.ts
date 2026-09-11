@@ -97,7 +97,14 @@ export async function resolveSiteManifest(): Promise<SiteManifest> {
     } else {
       try {
         const parsed = JSON.parse(specItem.content) as SiteManifest
-        if (parsed?.pages) return parsed
+        if (parsed?.pages) {
+          // A brain-authored spec states only what its author decided; every
+          // omitted top-level field (theme, mode, header, footer, brand, nav)
+          // inherits the template default so partial specs render instead of
+          // crashing. Pages always come from the spec alone.
+          const base = getSiteManifest()
+          return { ...base, ...parsed, pages: parsed.pages }
+        }
         console.warn('[brain] site-spec item content has no "pages"; falling back to file site.json')
       } catch {
         console.warn('[brain] site-spec item content is not valid JSON; falling back to file site.json')
