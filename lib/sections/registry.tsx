@@ -34,7 +34,7 @@ function renderSection(
   key: string,
   data: unknown,
   reactKey: string
-): ReactElement {
+): ReactElement | null {
   switch (key) {
     case "hero/split":
       return <HeroSplit key={reactKey} {...(data as HeroContent)} />
@@ -81,7 +81,10 @@ function renderSection(
     case "form-contact/split":
       return <FormContactSplit key={reactKey} {...(data as FormContactContent)} />
     default:
-      throw new Error(`Unknown section "${key}" in site.json`)
+      // Brain-authored specs can carry section types the registry doesn't ship.
+      // Content never bricks the build: warn, render nothing for this entry.
+      console.warn(`[sections] unknown section "${key}" — skipping (not in the registry)`)
+      return null
   }
 }
 
