@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { SectionStack } from "@/lib/sections/registry"
-import { getPageManifest } from "@/lib/site"
+import { getPageManifest, getSiteManifest } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: { absolute: "Countertop — margin alerts from your POS" },
@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 }
 
 export default async function DemoBPage() {
-  const page = getPageManifest("demo-b")
+  const page = getPageManifest(getSiteManifest(), "demo-b")
   return <SectionStack entries={page.sections} />
 }

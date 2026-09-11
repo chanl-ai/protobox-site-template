@@ -67,7 +67,10 @@ export async function listBrainCollection(
 }
 
 /** First matching item for a single-entry collection (site-config, brand-visuals). */
-export async function getBrainSingle(category: string): Promise<KnowledgeItem | null> {
-  const items = await listBrainCollection(category)
+export async function getBrainSingle(
+  category: string,
+  tag?: string
+): Promise<KnowledgeItem | null> {
+  const items = await listBrainCollection(category, tag)
   return items[0] ?? null
 }

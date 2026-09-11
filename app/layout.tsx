@@ -3,7 +3,7 @@ import { Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { getBrainTheme, getTheme, listThemes } from "@/lib/themes"
 import { themeStyleTag, themesGoogleFontsHref } from "@/lib/theme"
-import { getSiteManifest } from "@/lib/site"
+import { resolveSiteManifest } from "@/lib/site"
 import { siteConfig } from "@/lib/site-config"
 import { brainEnabled } from "@/lib/brain"
 
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const manifest = getSiteManifest()
+  const manifest = await resolveSiteManifest()
   const theme = brainEnabled()
     ? ((await getBrainTheme()) ?? getTheme(manifest.theme))
     : getTheme(manifest.theme)

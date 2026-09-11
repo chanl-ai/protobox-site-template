@@ -10,7 +10,7 @@ import path from "node:path"
 import matter from "gray-matter"
 import { remark } from "remark"
 import remarkHtml from "remark-html"
-import { brainEnabled, listBrainCollection, type KnowledgeItem } from "@/lib/brain"
+import { brainEnabled, listBrainCollection } from "@/lib/brain"
 
 const PAGES_DIR = path.join(process.cwd(), "content", "pages")
 const BLOG_DIR = path.join(process.cwd(), "content", "blog")
@@ -119,26 +119,17 @@ function readTimeMinutes(markdown: string): number {
   return Math.max(2, Math.round(words / 220))
 }
 
-// POST /api/v1/knowledge ignores a client-supplied `metadata` body — only
-// `category` and `tags` land in the stored metadata (verified against the
-// local stack: a seeded item's metadata came back with just category, tags,
-// requestedSource, _id). So metadata.slug/description below are read for
-// forward compatibility but never populated today; the slug always falls
-// back to the slugified title in practice.
-function brainSlug(item: KnowledgeItem): string {
-  const metaSlug = item.metadata?.slug
-  return typeof metaSlug === "string" && metaSlug ? metaSlug : slugify(item.title)
-}
-
-async function brainItemToPage(item: KnowledgeItem): Promise<Page> {
-  const contentHtml = await markdownToHtml(item.content)
-  const frontmatter: PageFrontmatter = {
-    title: item.title,
-    slug: brainSlug(item),
-    status: "published",
-    description: item.metadata?.description ?? "",
-    date: (item.metadata?.date as string | undefined) ?? item.createdAt,
-  }
+// Pages and posts are markdown WITH frontmatter in both modes — brain
+// content preserves the same frontmatter block verbatim inside the knowledge
+// item's `content` field, since POST /api/v1/knowledge drops everything
+// except category/tags from a client-supplied `metadata` body (verified:
+// a seeded item's metadata came back with just category, tags,
+// requestedSource, _id). One parser, one path: file and brain content both
+// go through matter() and come out as the same Page/Post shape.
+async function pageFromRaw(raw: string): Promise<Page> {
+  const { data, content } = matter(raw)
+  const frontmatter = data as PageFrontmatter
+  const contentHtml = await markdownToHtml(content)
   return { slug: frontmatter.slug, frontmatter, contentHtml }
 }
 
@@ -147,20 +138,22 @@ async function listFilePages(): Promise<Page[]> {
   const pages = await Promise.all(
     files.map(async (file) => {
       const raw = await fs.readFile(path.join(PAGES_DIR, file), "utf8")
-      const { data, content } = matter(raw)
-      const frontmatter = data as PageFrontmatter
-      const contentHtml = await markdownToHtml(content)
-      return { slug: frontmatter.slug, frontmatter, contentHtml }
+      return pageFromRaw(raw)
     })
   )
   return pages.filter((page) => page.frontmatter.status === "published")
 }
 
+async function listBrainPages(): Promise<Page[]> {
+  const items = await listBrainCollection("site-page", "published")
+  const pages = await Promise.all(items.map((item) => pageFromRaw(item.content)))
+  return pages.filter((page) => page.frontmatter.status === "published")
+}
+
 export async function listPages(): Promise<Page[]> {
   if (brainEnabled()) {
-    const items = await listBrainCollection("site-page", "published")
-    if (items.length) {
-      const pages = await Promise.all(items.map(brainItemToPage))
+    const pages = await listBrainPages()
+    if (pages.length) {
       return pages.sort((a, b) => a.frontmatter.title.localeCompare(b.frontmatter.title))
     }
   }
@@ -173,42 +166,16 @@ export async function getPage(slug: string): Promise<Page | null> {
   return pages.find((page) => page.slug === slug) ?? null
 }
 
-/**
- * The home page's brain content, independent of slug: since slugs always
- * derive from title (see brainSlug above), a brain-seeded home entry only
- * matches getPage("home") if it happens to be titled exactly "Home". Callers
- * that need "whichever site-page represents home" — the home route — use
- * this instead: it prefers an exact "home" slug match but falls back to the
- * single/first published site-page entry, matching the one-home-page-per-
- * workspace convention this collection is seeded under.
- */
-export async function getBrainHomePage(): Promise<Page | null> {
-  const items = await listBrainCollection("site-page", "published")
-  if (!items.length) return null
-  const bySlug = items.find((item) => brainSlug(item) === "home")
-  return brainItemToPage(bySlug ?? items[0])
-}
-
-async function brainItemToPost(item: KnowledgeItem): Promise<Post> {
-  const { html, toc } = addHeadingIds(await markdownToHtml(item.content))
-  const tags = item.metadata?.tags?.filter((tag) => tag !== "published")
-  const frontmatter: PostFrontmatter = {
-    title: item.title,
-    slug: brainSlug(item),
-    status: "published",
-    description: item.metadata?.description ?? "",
-    date: (item.metadata?.date as string | undefined) ?? item.createdAt,
-    author: item.metadata?.author as PostAuthor | undefined,
-    category: item.metadata?.postCategory as string | undefined,
-    tags,
-    faqs: item.metadata?.faqs as PostFaq[] | undefined,
-  }
+async function postFromRaw(raw: string): Promise<Post> {
+  const { data, content } = matter(raw)
+  const frontmatter = data as PostFrontmatter
+  const { html, toc } = addHeadingIds(await markdownToHtml(content))
   return {
     slug: frontmatter.slug,
     frontmatter,
     contentHtml: html,
     toc,
-    readTimeMinutes: readTimeMinutes(item.content),
+    readTimeMinutes: readTimeMinutes(content),
   }
 }
 
@@ -217,26 +184,22 @@ async function listFilePosts(): Promise<Post[]> {
   const posts = await Promise.all(
     files.map(async (file) => {
       const raw = await fs.readFile(path.join(BLOG_DIR, file), "utf8")
-      const { data, content } = matter(raw)
-      const frontmatter = data as PostFrontmatter
-      const { html, toc } = addHeadingIds(await markdownToHtml(content))
-      return {
-        slug: frontmatter.slug,
-        frontmatter,
-        contentHtml: html,
-        toc,
-        readTimeMinutes: readTimeMinutes(content),
-      }
+      return postFromRaw(raw)
     })
   )
   return posts.filter((post) => post.frontmatter.status === "published")
 }
 
+async function listBrainPosts(): Promise<Post[]> {
+  const items = await listBrainCollection("blog", "published")
+  const posts = await Promise.all(items.map((item) => postFromRaw(item.content)))
+  return posts.filter((post) => post.frontmatter.status === "published")
+}
+
 export async function listPosts(): Promise<Post[]> {
   if (brainEnabled()) {
-    const items = await listBrainCollection("blog", "published")
-    if (items.length) {
-      const posts = await Promise.all(items.map(brainItemToPost))
+    const posts = await listBrainPosts()
+    if (posts.length) {
       return posts.sort((a, b) => (a.frontmatter.date < b.frontmatter.date ? 1 : -1))
     }
   }
@@ -296,12 +259,7 @@ export async function getLandingManifest<T>(slug: string): Promise<T | null> {
   }
 }
 
-/**
- * Loads one section's content blob by manifest ref ("home/hero" →
- * content/sections/home/hero.json). Throws on a missing file so a manifest
- * typo fails the build instead of rendering an empty section.
- */
-export async function getSectionContent<T>(ref: string): Promise<T> {
+async function getFileSectionContent<T>(ref: string): Promise<T> {
   const file = path.join(SECTIONS_DIR, `${ref}.json`)
   let raw: string
   try {
@@ -310,4 +268,49 @@ export async function getSectionContent<T>(ref: string): Promise<T> {
     throw new Error(`Missing section content: content/sections/${ref}.json`)
   }
   return JSON.parse(raw) as T
+}
+
+/**
+ * Every published "site-section" knowledge item, keyed by the `ref` field
+ * carried inside its JSON content (metadata can't hold it — see the note on
+ * listBrainPages/listBrainPosts above). A malformed blob is skipped, not
+ * thrown, so one bad seed doesn't break every other section on the page.
+ */
+async function listBrainSections(): Promise<Map<string, unknown>> {
+  const items = await listBrainCollection("site-section", "published")
+  const sections = new Map<string, unknown>()
+  for (const item of items) {
+    try {
+      // "ref" is stripped before storing: it's only routing metadata, and
+      // section content gets spread as props onto section components
+      // ({...data} in registry.tsx) — a leftover "ref" key there collides
+      // with React's reserved ref prop and throws "Refs cannot be used in
+      // Server Components" instead of rendering.
+      const parsed = JSON.parse(item.content) as { ref?: string; [key: string]: unknown }
+      const { ref, ...content } = parsed
+      if (ref) sections.set(ref, content)
+    } catch {
+      console.warn(`[brain] site-section item "${item.id}" is not valid JSON; skipped`)
+    }
+  }
+  return sections
+}
+
+/**
+ * Loads one section's content blob by manifest ref ("home/hero" →
+ * content/sections/home/hero.json in file mode, or the "site-section" item
+ * whose content carries `"ref": "home/hero"` in brain mode). A ref missing
+ * from the brain falls back to the file per-ref (never silently — logs which
+ * ref was missing), so a partially-seeded workspace still renders every
+ * section. Both modes throw when the ref resolves nowhere, so a manifest
+ * typo fails the build instead of rendering an empty section.
+ */
+export async function getSectionContent<T>(ref: string): Promise<T> {
+  if (brainEnabled()) {
+    const sections = await listBrainSections()
+    const data = sections.get(ref)
+    if (data) return data as T
+    console.warn(`[brain] no published site-section for ref "${ref}"; falling back to file`)
+  }
+  return getFileSectionContent<T>(ref)
 }

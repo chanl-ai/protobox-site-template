@@ -3,10 +3,10 @@
 
 import type { ReactNode } from "react"
 import { SiteShell } from "@/components/site/SiteShell"
-import { getPageManifest } from "@/lib/site"
+import { getPageManifest, getSiteManifest } from "@/lib/site"
 
 export default function DemoBLayout({ children }: { children: ReactNode }) {
-  const page = getPageManifest("demo-b")
+  const page = getPageManifest(getSiteManifest(), "demo-b")
   const nav = [
     { label: "How it works", href: "#features" },
     { label: "Pricing", href: "#pricing" },
