@@ -1,0 +1,13 @@
+{
+  "heading": "Book your margin review",
+  "intro": "Pick nothing, install nothing. Send this and Elena replies with three time slots.",
+  "fields": [
+    { "name": "name", "label": "Your name", "type": "text", "required": true, "placeholder": "Marisol Ibarra" },
+    { "name": "email", "label": "Email", "type": "email", "required": true, "placeholder": "you@yourrestaurant.com" },
+    { "name": "restaurant", "label": "Restaurant and locations", "type": "text", "required": true, "placeholder": "Casa Ibarra, 2 locations" },
+    { "name": "message", "label": "Anything we should know before the call?", "type": "textarea", "placeholder": "Books are three months behind and food cost feels wrong…" }
+  ],
+  "submitLabel": "Request the call",
+  "consent": "Your details are used to schedule this call and for nothing else. No list, no drip sequence.",
+  "successMessage": "Requested. Elena replies with three time slots within one business day."
+}

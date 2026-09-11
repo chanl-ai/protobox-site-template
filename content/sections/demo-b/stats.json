@@ -1,0 +1,8 @@
+{
+  "heading": "Measured across live deployments",
+  "stats": [
+    { "value": "3.1 pts", "label": "Average food-cost recovery", "detail": "Within the first 90 days, measured against each restaurant's own trailing quarter." },
+    { "value": "38 hrs", "label": "Median warning lead time", "detail": "From drift detected to when it would have surfaced in a weekly report." },
+    { "value": "96%", "label": "Alerts rated actionable", "detail": "Operators mark every alert; anything rated noise trains the threshold down." }
+  ]
+}

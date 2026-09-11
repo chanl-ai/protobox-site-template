@@ -1,0 +1,27 @@
+{
+  "title": "Free 20-minute margin review",
+  "description": "Bring last month's P&L to a 20-minute call and leave knowing your actual food cost — no pitch, no follow-up sequence.",
+  "theme": "atelier",
+  "mode": "light",
+  "header": { "variant": "center" },
+  "footer": { "variant": "slim" },
+  "brand": {
+    "name": "Torres Books & Margins",
+    "shortName": "Torres B&M",
+    "email": "hello@torresbooksandmargins.com",
+    "tagline": "Bookkeeping and margin coaching for independent restaurants."
+  },
+  "nav": [
+    { "label": "What you get", "href": "#features" },
+    { "label": "Who it's for", "href": "#faq" },
+    { "label": "Book it", "href": "#contact-form" }
+  ],
+  "sections": [
+    { "section": "hero", "variant": "centered", "content": "landings/margin-review/hero" },
+    { "section": "feature-grid", "variant": "list", "content": "landings/margin-review/features" },
+    { "section": "testimonials", "variant": "single", "content": "home/testimonial" },
+    { "section": "about-founder", "variant": "letter", "content": "home/founder" },
+    { "section": "faq", "variant": "two-column", "content": "landings/margin-review/faq" },
+    { "section": "form-contact", "variant": "card", "content": "landings/margin-review/form" }
+  ]
+}

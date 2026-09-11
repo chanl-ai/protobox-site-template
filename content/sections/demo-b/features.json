@@ -1,0 +1,11 @@
+{
+  "eyebrow": "How it works",
+  "heading": "From ticket stream to one useful alert",
+  "intro": "Countertop is not another dashboard to check. It is the absence of one: silence when margins hold, a single specific alert when they don't.",
+  "items": [
+    { "icon": "plug", "title": "Connect the POS you have", "description": "OAuth into Toast, Square, or Clover in minutes. Countertop backfills ninety days of tickets so alerts start calibrated to your restaurant, not an industry average." },
+    { "icon": "receipt", "title": "Invoices read themselves", "description": "Forward vendor invoices to your Countertop address. Line items are matched to menu ingredients, so plate cost updates when your supplier reprices — not when someone retypes a spreadsheet." },
+    { "icon": "gauge", "title": "Drift detection tuned to you", "description": "Thresholds calibrate to each location's own history and seasonality. A taqueria's Tuesday and a steakhouse's Saturday get different definitions of normal." },
+    { "icon": "bell", "title": "One alert, with the fix attached", "description": "\"Food cost up 2.3 pts, driven by chicken thighs +18% at Sysco\" — each alert names the driver and the two most common fixes, in a text message, not a login." }
+  ]
+}

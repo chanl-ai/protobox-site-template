@@ -1,0 +1,15 @@
+{
+  "eyebrow": "Free, twenty minutes, your numbers",
+  "headline": "Find out your actual food cost",
+  "subhead": "One call with a restaurant bookkeeper who closes 31 sets of books every Friday. Bring last month's P&L — or the shoebox where it should be — and leave with your real margin, either way.",
+  "primaryCta": {
+    "label": "Book the margin review",
+    "href": "#contact-form"
+  },
+  "secondaryCta": {
+    "label": "What happens on the call",
+    "href": "#features"
+  },
+  "headlineAccent": "this week.",
+  "ctaNote": "Twenty minutes, free, with the person who'd do the work."
+}

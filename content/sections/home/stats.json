@@ -1,0 +1,8 @@
+{
+  "heading": "What clients see change",
+  "stats": [
+    { "value": "4.2 pts", "label": "Median food-cost improvement", "detail": "Across clients in their first six months, measured against their own trailing quarter." },
+    { "value": "5 days", "label": "From week's end to closed books", "detail": "Friday service, Wednesday close, every week." },
+    { "value": "$18K", "label": "Largest single catch last year", "detail": "A vendor double-billing pattern found in line-by-line invoice reconciliation." }
+  ]
+}

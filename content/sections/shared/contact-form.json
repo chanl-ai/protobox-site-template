@@ -1,0 +1,13 @@
+{
+  "heading": "Tell us about your restaurant",
+  "intro": "Three fields, one reply, no drip campaign. Elena reads every message herself.",
+  "fields": [
+    { "name": "name", "label": "Your name", "type": "text", "required": true, "placeholder": "Marisol Ibarra" },
+    { "name": "email", "label": "Email", "type": "email", "required": true, "placeholder": "you@yourrestaurant.com" },
+    { "name": "locations", "label": "Locations and POS", "type": "text", "placeholder": "2 locations, Toast" },
+    { "name": "message", "label": "What's going on with the books?", "type": "textarea", "required": true, "placeholder": "Books are three months behind and food cost feels wrong…" }
+  ],
+  "submitLabel": "Send to Elena",
+  "consent": "Your message goes to one inbox and nowhere else. No newsletter signup, no data sharing — see the privacy note in the footer.",
+  "successMessage": "Sent. Elena replies within one business day — usually the same afternoon."
+}

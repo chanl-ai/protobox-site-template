@@ -1,0 +1,12 @@
+{
+  "heading": "Questions owners actually ask",
+  "intro": "The honest answers, including the ones that lose us business.",
+  "items": [
+    { "question": "Do I have to switch POS systems?", "answer": "No. We work with Toast, Square, and Clover as they are. If you're on something rarer, we'll tell you in the first call whether we can reconcile it — before you've paid anything." },
+    { "question": "What do you need from me each week?", "answer": "About ten minutes: forwarding vendor invoices as they arrive and answering the occasional question about an unfamiliar charge. Everything else pulls from your POS and bank feeds automatically." },
+    { "question": "Can you take over mid-year from my current bookkeeper?", "answer": "Yes, and it's common. We do a catch-up close on the current year first — typically two to three weeks — so the weekly rhythm starts from clean numbers, not inherited ones." },
+    { "question": "Do you do my taxes too?", "answer": "No. We hand your CPA a clean, reconciled year — which usually makes their bill smaller — but filing stays with them. If you don't have a CPA, we'll introduce you to two we trust with restaurants." },
+    { "question": "What happens on the monthly call?", "answer": "Thirty minutes on three numbers: plate cost, labor mix, and waste, compared to your own last quarter. You leave with one specific change to make and a way to see whether it worked by the next call." },
+    { "question": "What if my books are a mess right now?", "answer": "That's the normal starting point, not a problem. The catch-up close is priced separately and quoted up front after we look at the actual state of your ledger — no hourly meter running while we dig." }
+  ]
+}

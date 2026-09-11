@@ -1,0 +1,11 @@
+{
+  "heading": "Before you connect",
+  "items": [
+    { "question": "Does Countertop replace my bookkeeper?", "answer": "No — it makes their month easier. Countertop watches operations in real time; your bookkeeper still owns the ledger. Most clients forward our accountant export straight to them." },
+    { "question": "What does setup actually involve?", "answer": "OAuth into your POS, forward one recent vendor invoice, and confirm your locations. Median time from signup to first calibrated digest is nine minutes plus one overnight backfill." },
+    { "question": "My menu changes seasonally. Will alerts go haywire?", "answer": "Thresholds recalibrate continuously against your own trailing history, and you can mark planned changes — a new menu, a holiday week — so the model expects the shift instead of flagging it." },
+    { "question": "What if I run a POS you don't support?", "answer": "Today it's Toast, Square, and Clover. Anything else, join the waitlist and we'll email when yours lands — we won't sell you an integration that doesn't exist yet." },
+    { "question": "Who sees my data?", "answer": "You and the teammates you invite. Ticket data is encrypted in transit and at rest, never sold, and never used to benchmark you against other restaurants without explicit opt-in." },
+    { "question": "How do I cancel?", "answer": "One click in settings, effective at the end of the billing month, and your data exports stay available for 90 days after. No retention calls." }
+  ]
+}

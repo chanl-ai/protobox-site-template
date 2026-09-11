@@ -1,0 +1,32 @@
+{
+  "eyebrow": "Bookkeeping for restaurants",
+  "headline": "Know your margins",
+  "subhead": "Torres Books & Margins keeps your books current, your food and labor cost honest, and your P&L in a language you can act on before month-end — not after it.",
+  "primaryCta": {
+    "label": "Book a 20-minute margin review",
+    "href": "#contact"
+  },
+  "secondaryCta": {
+    "label": "See what it costs",
+    "href": "#pricing"
+  },
+  "stats": [
+    {
+      "value": "Every Friday",
+      "label": "Books closed weekly",
+      "detail": "Food and labor cost drift shows up while there's still a week left to fix it."
+    },
+    {
+      "value": "31 restaurants",
+      "label": "On weekly closes today",
+      "detail": "From single taquerias to four-location groups."
+    },
+    {
+      "value": "3 numbers",
+      "label": "Per monthly call",
+      "detail": "Plate cost, labor mix, waste — the levers that actually move margin."
+    }
+  ],
+  "headlineAccent": "before the walk-in does.",
+  "ctaNote": "Free 20-minute review — no pitch deck, no follow-up sequence."
+}

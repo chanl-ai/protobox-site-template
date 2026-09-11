@@ -1,0 +1,9 @@
+{
+  "heading": "Fair questions before you book",
+  "items": [
+    { "question": "Is this a sales call in disguise?", "answer": "No. The last five minutes name what working together would look like, once, and only if you ask. Roughly half of margin reviews end with a referral elsewhere — usually to a cheaper bookkeeper, because the restaurant is smaller than our service is built for." },
+    { "question": "What do I need to bring?", "answer": "Last month's P&L if you have one. If you don't, bring your POS end-of-month summary and two or three recent vendor invoices — that's enough to compute a real food cost on the call." },
+    { "question": "Why is it free?", "answer": "Because it's the fastest honest way to know whether we fit. Twenty minutes with your real numbers tells both of us more than any brochure, and the owners who become clients stay for years." },
+    { "question": "My books are months behind. Should I wait?", "answer": "Book now. Behind books change the agenda, not the value — the call becomes about the catch-up path and what it will cost, which is exactly what you need priced before you commit to anyone, including us." }
+  ]
+}

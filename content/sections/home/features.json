@@ -1,0 +1,10 @@
+{
+  "eyebrow": "What the engagement covers",
+  "heading": "Books that change a decision this week",
+  "intro": "Not a shoebox service and not a fractional CFO — the specific middle: current books, reconciled to the kitchen, explained in plain language.",
+  "items": [
+    { "icon": "calendar-check", "title": "Weekly close, not a year-end surprise", "description": "Books close every Friday. You see food cost and labor cost drift while there's still a week left to fix it, not three months later on a tax return." },
+    { "icon": "receipt", "title": "POS-to-ledger reconciliation", "description": "Toast, Square, and Clover feeds are reconciled line by line against vendor invoices and payroll, so the P&L reflects what actually left the kitchen and the register." },
+    { "icon": "line-chart", "title": "Margin coaching, not just categorizing", "description": "A monthly 30-minute call walks through the three levers that move restaurant margin — plate cost, labor mix, and waste — with your real numbers, not a generic benchmark." }
+  ]
+}

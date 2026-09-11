@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Now reading Toast, Square & Clover",
+  "headline": "Your POS knows your margin.",
+  "subhead": "Countertop watches every ticket, invoice, and shift from your existing POS and sends one alert when food or labor cost drifts — while the week can still be saved.",
+  "primaryCta": {
+    "label": "Start free — connect your POS",
+    "href": "#pricing"
+  },
+  "secondaryCta": {
+    "label": "See a sample alert",
+    "href": "#features"
+  },
+  "stats": [
+    {
+      "value": "9 min",
+      "label": "Median setup time"
+    },
+    {
+      "value": "412",
+      "label": "Restaurants on live alerts"
+    },
+    {
+      "value": "3.1 pts",
+      "label": "Avg food-cost recovery"
+    }
+  ],
+  "headlineAccent": "Countertop makes it say so.",
+  "ctaNote": "Free tier — one location, no credit card. Cancel in one click."
+}

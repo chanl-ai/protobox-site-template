@@ -1,0 +1,9 @@
+{
+  "eyebrow": "The twenty minutes",
+  "heading": "What actually happens on the call",
+  "items": [
+    { "title": "Minutes 0–5: your top line, corrected", "description": "We reconcile your POS sales summary against what a P&L would say — comps, voids, gift cards, and third-party delivery fees move the number more than most owners expect." },
+    { "title": "Minutes 5–15: food cost, for real", "description": "Using your last month of vendor invoices and sales mix, we compute actual food cost — not the POS theoretical. The gap between the two is usually where the margin went." },
+    { "title": "Minutes 15–20: the one change", "description": "You leave with one specific, measurable change for the next two weeks, and the number that will tell you whether it worked. Whether we ever talk again is up to you." }
+  ]
+}

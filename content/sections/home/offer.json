@@ -1,0 +1,23 @@
+{
+  "heading": "One engagement, flat price",
+  "intro": "No hourly meters and no surprise invoices — the same scope every month, priced so a two-location group can budget it.",
+  "offers": [
+    {
+      "name": "The engagement",
+      "price": "$650/mo",
+      "priceNote": "flat, for up to $1.2M in combined annual revenue",
+      "includes": [
+        "Weekly bookkeeping close across every location, reconciled to your POS and bank feeds",
+        "A monthly P&L walkthrough call, in plain language, with the three numbers that actually move your margin",
+        "Vendor invoice tracking so food cost is measured against what you were billed, not just what you sold",
+        "One point of contact who has read a restaurant P&L before"
+      ],
+      "notFor": [
+        "You run a single food truck doing under $150K a year — a part-time bookkeeper is the right size for now",
+        "You want your books touched once a year, at tax time",
+        "You're looking for a fractional CFO to build five-year models — we do bookkeeping and margin coaching, not financial modeling"
+      ],
+      "cta": { "label": "Book a margin review", "href": "#contact" }
+    }
+  ]
+}

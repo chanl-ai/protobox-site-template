@@ -1,0 +1,42 @@
+{
+  "theme": "heritage",
+  "mode": "light",
+  "header": { "variant": "pill" },
+  "footer": { "variant": "columns" },
+  "pages": {
+    "home": {
+      "sections": [
+        { "section": "hero", "variant": "split", "content": "home/hero" },
+        { "section": "logo-cloud", "variant": "row", "content": "home/logos" },
+        { "section": "feature-grid", "variant": "cards", "content": "home/features" },
+        { "section": "stats", "variant": "band", "content": "home/stats" },
+        { "section": "testimonials", "variant": "single", "content": "home/testimonial" },
+        { "section": "pricing", "variant": "single-offer", "content": "home/offer" },
+        { "section": "faq", "variant": "two-column", "content": "home/faq" },
+        { "section": "cta-banner", "variant": "panel", "content": "home/cta" }
+      ]
+    },
+    "demo-b": {
+      "theme": "foundry",
+      "mode": "dark",
+      "header": { "variant": "minimal" },
+      "footer": { "variant": "big-brand" },
+      "brand": {
+        "name": "Countertop",
+        "shortName": "Countertop",
+        "email": "hello@countertop.app",
+        "tagline": "Margin alerts straight from your POS"
+      },
+      "sections": [
+        { "section": "hero", "variant": "centered", "content": "demo-b/hero" },
+        { "section": "logo-cloud", "variant": "row", "content": "demo-b/logos" },
+        { "section": "stats", "variant": "band", "content": "demo-b/stats" },
+        { "section": "feature-grid", "variant": "list", "content": "demo-b/features" },
+        { "section": "testimonials", "variant": "grid", "content": "demo-b/testimonials" },
+        { "section": "pricing", "variant": "tiers", "content": "demo-b/pricing" },
+        { "section": "faq", "variant": "accordion", "content": "demo-b/faq" },
+        { "section": "cta-banner", "variant": "strip", "content": "demo-b/cta" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "heading": "Talk to Elena",
+  "intro": "One email address, answered by the person who'll do the work. Say how many locations you run and what POS you're on — that's enough to start.",
+  "email": "hello@torresbooksandmargins.com",
+  "phone": "(210) 555-0164",
+  "location": "San Antonio, Texas — working with restaurants across Texas",
+  "hours": ["Mon–Fri, 8am–5pm CT", "Closed during Friday close (2–4pm)"],
+  "cta": { "label": "Email about your restaurant", "href": "mailto:hello@torresbooksandmargins.com" },
+  "ctaNote": "No forms, no discovery-call funnel. Email what's going on and you get a reply from the person who'll actually do the work."
+}

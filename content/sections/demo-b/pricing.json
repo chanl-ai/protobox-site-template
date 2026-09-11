@@ -1,0 +1,44 @@
+{
+  "heading": "Priced per location, free to start",
+  "intro": "Every plan starts with a 30-day free trial on your real POS data. No card until the first alert has earned it.",
+  "offers": [
+    {
+      "name": "Counter",
+      "price": "$0",
+      "priceNote": "one location, weekly digest",
+      "includes": [
+        "One POS connection",
+        "Weekly margin digest every Monday",
+        "90-day ticket backfill",
+        "Email support"
+      ],
+      "cta": { "label": "Connect your POS", "href": "#" }
+    },
+    {
+      "name": "Service",
+      "price": "$79",
+      "priceNote": "per location / month",
+      "featured": true,
+      "includes": [
+        "Real-time drift alerts by text",
+        "Invoice inbox with line-item matching",
+        "Labor-mix and waste tracking",
+        "Alert thresholds tuned per location",
+        "Priority support from restaurant people"
+      ],
+      "cta": { "label": "Start 30-day trial", "href": "#" }
+    },
+    {
+      "name": "Group",
+      "price": "$59",
+      "priceNote": "per location / month, 5+ locations",
+      "includes": [
+        "Everything in Service",
+        "Cross-location comparison alerts",
+        "Owner roll-up digest",
+        "CSV and accountant exports"
+      ],
+      "cta": { "label": "Talk to us", "href": "#" }
+    }
+  ]
+}
